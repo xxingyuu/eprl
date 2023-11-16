@@ -321,7 +321,7 @@ def dynamicPlot(weeks):
                 # basedf = easydf[0:int(i*length/Timestep)]
             else:
                 plotdf = df[int((i-move_length)*length/Timestep):int(i*length/Timestep)]
-"""
+            """
             kpi1.metric(
                 label = "Our " + str(gas) + " Emission Rate Running Average (kg/h)",
                 value = round(np.average(getGas(gas, plotdf).iloc[:,0]),3)
@@ -330,8 +330,8 @@ def dynamicPlot(weeks):
                 label = "Baseline" + str(gas) + " Emisson Data Running Average (kg/h)",
                 value = round(np.average(getGas(gas, plotdf).iloc[:,0]),3)
             )
-"""
-                # basedf = easydf[int((i-5)*length/Timestep):int(i*length/Timestep)]
+            """
+            # basedf = easydf[int((i-5)*length/Timestep):int(i*length/Timestep)]
             zonedf = plotdf[[
                 'ZONE ONE RETURN OUTLET:System Node Temperature [C](TimeStep)',
                 'Date/Time'
@@ -380,7 +380,7 @@ def dynamicPlot(weeks):
             # fig.update_yaxes(range=[0,32])
             # fig.addtrace(bbasedf, x = 'Date/Time', y=basedf.columms[5:6])
             st.plotly_chart(fig, use_container_width=True)
-"""
+            """
         
             y2 = gety2index(check1,  zonedf)
             fig2 = px.line(zonedf, x='Date/Time', y=y2)
