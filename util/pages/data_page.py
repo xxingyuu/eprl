@@ -56,75 +56,73 @@ format = "%m-%d %H:%M:%S"
 
 # df = pd.read_csv("util/pages/RL_new.csv", parse_dates=['Date/Time'],infer_datetime_format=format)
 # easydf = pd.read_csv("util/pages/easy_agent_data.csv", parse_dates=['Date/Time'], infer_datetime_format=format)
-df = pd.read_csv("util/pages/eplusout.csv", parse_dates=['Date/Time'],infer_datetime_format=format)
+df = pd.read_csv("RL_final_v6.csv", parse_dates=['Date/Time'],infer_datetime_format=format)
 cur_var = 1
 
 if 'cur' not in st.session_state:
     st.session_state['cur'] = 1
 
-"""
 def getGas(gas, df):
     if gas == "CO2":
         carbondf = df[["Site:Environmental Impact Total CO2 Emissions Carbon Equivalent Mass [kg](Hourly)_our",
         "Site:Environmental Impact Total CO2 Emissions Carbon Equivalent Mass [kg](Hourly)_easy","Date/Time"]]
         carbondf.rename(columns={"Site:Environmental Impact Total CO2 Emissions Carbon Equivalent Mass [kg](Hourly)_our":
-                        "CO2 Emission Mass (kg/h) of TRPO MPI",
+                        "TRPO MPI算法下CO2排放量(kg/h)",
                         "Site:Environmental Impact Total CO2 Emissions Carbon Equivalent Mass [kg](Hourly)_easy":
-                        "CO2 Emission Mass (kg/h) of Baseline"
+                        "Baseline算法下CO2排放量(kg/h)"
                         }, inplace = True)
     elif gas == "CO":
         carbondf = df[["Site:Environmental Impact Electricity CO Emissions Mass [kg](Hourly)_our",
         "Site:Environmental Impact Electricity CO Emissions Mass [kg](Hourly)_easy","Date/Time"]]
         carbondf.rename(columns={"Site:Environmental Impact Electricity CO Emissions Mass [kg](Hourly)_our":
-                        "CO Emission Mass (kg/h) of TRPO MPI",
+                        "TRPO MPI算法下CO排放量(kg/h)",
                         "Site:Environmental Impact Electricity CO Emissions Mass [kg](Hourly)_easy":
-                        "CO Emission Mass (kg/h) of Baseline"
+                        "Baseline算法下CO排放量(kg/h)"
                         }, inplace = True)
     elif gas == "CH4":
         # col1 = str(gas) + ":Facility [kg](Hourly)_our"
         # col2 = str(gas) + ":Facility [kg](Hourly)_our"
         carbondf = df[['CH4:Facility [kg](Hourly)_our', 'CH4:Facility [kg](Hourly)_easy', 'Date/Time']]
-        carbondf.rename(columns = {"CH4:Facility [kg](Hourly)_our:col3":"CH4 Emission Mass (kg/h) of TRPO MPI"
-                    , "CH4:Facility [kg](Hourly)_easy":"CH4 Emission Mass (kg/h) of Baseline"}, inplace = True)
+        carbondf.rename(columns = {"CH4:Facility [kg](Hourly)_our:col3":"TRPO MPI算法下CH4排放量(kg/h)"
+                    , "CH4:Facility [kg](Hourly)_easy":"Baseline算法下CH4排放量(kg/h)"}, inplace = True)
     elif gas == "PM2.5":
         carbondf = df[['PM2.5:Facility [kg](Hourly)_our', 'PM2.5:Facility [kg](Hourly)_easy', 'Date/Time']]
-        carbondf.rename(columns = {"PM2.5:Facility [kg](Hourly)_our:col3":"PM2.5 Emission Mass (kg/h) of TRPO MPI"
-                    , "PM2.5:Facility [kg](Hourly)_easy":"PM2.5 Emission Mass (kg/h) of Baseline"}, inplace = True)
+        carbondf.rename(columns = {"PM2.5:Facility [kg](Hourly)_our":"TRPO MPI算法下PM2.5排放量(kg/h)"
+                    , "PM2.5:Facility [kg](Hourly)_easy":"Baseline算法下PM2.5排放量(kg/h)"}, inplace = True)
     elif gas == "SO2":
         carbondf = df[['SO2:Facility [kg](Hourly)_our', 'SO2:Facility [kg](Hourly)_easy', 'Date/Time']]
-        carbondf.rename(columns = {"SO2:Facility [kg](Hourly)_our:col3":"SO2 Emission Mass (kg/h) of TRPO MPI"
-                    , "SO2:Facility [kg](Hourly)_easy":"SO2 Emission Mass (kg/h) of Baseline"}, inplace = True)
+        carbondf.rename(columns = {"SO2:Facility [kg](Hourly)_our":"TRPO MPI算法下SO2排放量(kg/h)"
+                    , "SO2:Facility [kg](Hourly)_easy":"Baseline算法下SO2排放量(kg/h)"}, inplace = True)
     elif gas == "NOx":
         carbondf = df[['NOx:Facility [kg](Hourly)_our', 'NOx:Facility [kg](Hourly)_easy', 'Date/Time']]
-        carbondf.rename(columns = {"NOx:Facility [kg](Hourly)_our:col3":"NOx Emission Mass (kg/h) of TRPO MPI"
-                    , "NOx:Facility [kg](Hourly)_easy":"NOx Emission Mass (kg/h) of Baseline"}, inplace = True)
+        carbondf.rename(columns = {"NOx:Facility [kg](Hourly)_our":"TRPO MPI算法下NOx排放量(kg/h)"
+                    , "NOx:Facility [kg](Hourly)_easy":"Baseline算法下NOx排放量(kg/h)"}, inplace = True)
     return carbondf
-"""
+
 def staticPlot(weeks):
-    st.title("静态数据")
-    
-    #st.markdown("""
-    #    在下列选项中选择显示数据。
-    #""")
-    
-    #Parameters = ['HVAC', ' ']
-    #Fanmeters = ['光照', ' ']
-    #Outmeters = ['West Temperature', 'East Temperature']
-    check1 = st.checkbox("Baseline")
-    #check2 = st.checkbox("TRPO MPI")
+    st.title("静态数据")    #Static HVAC Dashboard
     st.markdown("""
-        - Baseline是优于虚拟代理性能的线性非平凡控制算法。
-        
+        使用以下算法与选项选择您想演示的数据。
+    """)    #Use Checkbox and Select menu to select the data you want to display.
+    Parameters = ['西部区域HVAC温度', '东部区域HVAC温度'] #HVAC West Temperature  HVAC East Temperature
+    Fanmeters = ['西部区域送风速率', '东部区域送风速率']   #West Zone Supply Fan Rate  East Zone Supply Fan Rate
+    Outmeters = ['西部区域室温', '东部区域室温']
+    check1 = st.checkbox("Baseline")
+    check2 = st.checkbox("TRPO MPI")
+    st.markdown("""
+        - Baseline是优于虚拟代理性能的线性非平凡控制算法。        
+        - TRPO MPI是基于强化学习的控制算法。
     """)
-
+        #- Baseline is a linear non-trivial control algorithm which surpassed dummy agent performance. 
+        #- TRPO MPI is our Reinforcement Learning based control algorithm.
+        
     # selectzone = st.multiselect('Evaluation Parameters', eval, default=['CO2'])
-    
-    # gas = st.selectbox('气体', ('CO2', 'CO', 'CH4', 'PM2.5', 'SO2', 'NOx'))
-    #selectzone = st.multiselect(' ', Parameters, default=['HVAC'])
-    #fanmass = st.multiselect('光照', Fanmeters, default = ['光照'])
+    gas = st.selectbox('评估气体对象', ('CO2', 'CO', 'CH4', 'PM2.5', 'SO2', 'NOx')) #Evaluation Gas
+    selectzone = st.multiselect('行为温度参数', Parameters, default=['西部区域HVAC温度'])    #Action Temperature Parameters
+    fanmass = st.multiselect('HVAC送风速率', Fanmeters, default = ['西部区域送风速率'])    #HVAC Supply Fan Rate
 
 
-    #outtemperatre = st.multiselect('Select Output Temperatures ', Outmeters, default=['West Temperature'])
+    outtemperatre = st.multiselect('选择输出室温类型 ', Outmeters, default=['西部区域室温'])    #Select Output Temperatures
 
     length = len(df)
     X = np.linspace(0, 1, len(df))
@@ -132,98 +130,117 @@ def staticPlot(weeks):
     end = weeks[1]
 
 
-    #carbondf = getGas(gas, df)
-    #carbondf = carbondf[int(start*length/T):int(end*length/T)]
+    carbondf = getGas(gas, df)
+    carbondf = carbondf[int(start*length/T):int(end*length/T)]
 
     zonedf= df[[
-                'ZONE ONE RETURN OUTLET:System Node Temperature [C](TimeStep)',
+                'WEST ZONE DEC OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_our',
+                'WEST ZONE DEC OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_easy',
+                'EAST AIR LOOP OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_our',
+                'EAST AIR LOOP OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_easy',
                 'Date/Time'
             ]]
     zonedf.rename(columns={
-                "ZONE ONE RETURN OUTLET:System Node Temperature [C](TimeStep)":
-                "Out Temperature (C) of Baseline"
-            }, inplace=True)
-    hmddf = df[[
-                "ZONE ONE SPACE:Zone Air Relative Humidity [%](TimeStep)",
+        "WEST ZONE DEC OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_our":
+        "TRPO MPI算法下西部区域HVAC排放温度(C)",
+        "WEST ZONE DEC OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_easy":
+        "Baseline算法下西部区域HVAC排放温度(C)",
+        "EAST AIR LOOP OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_our":
+        "TRPO MPI算法下东部区域HVAC排放温度(C)",
+        "EAST AIR LOOP OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_easy":
+        "Baseline算法下东部区域HVAC排放温度(C)"
+    }, inplace=True)
+    outdf = df[[
+                "WEST ZONE:Zone Air Temperature [C](TimeStep)_our",
+                "WEST ZONE:Zone Air Temperature [C](TimeStep)_easy",
+                "EAST ZONE:Zone Air Temperature [C](TimeStep)_our",
+                "EAST ZONE:Zone Air Temperature [C](TimeStep)_easy",
                 "Date/Time"
             ]]
-    hmddf.rename(columns={
-                "ZONE ONE SPACE:Zone Air Relative Humidity [%](TimeStep)":
-                "Air Humidity [%] of Baseline"
+    outdf.rename(columns={
+                "WEST ZONE:Zone Air Temperature [C](TimeStep)_our":
+                "TRPO MPI算法下西部区域实时温度",
+                "WEST ZONE:Zone Air Temperature [C](TimeStep)_easy":
+                "Baseline算法下西部区域实时温度",
+                "EAST ZONE:Zone Air Temperature [C](TimeStep)_our":
+                "TRPO MPI算法下东部区域实时温度",
+                "EAST ZONE:Zone Air Temperature [C](TimeStep)_easy":
+                "Baseline算法下东部区域实时温度"
             }, inplace=True)
     fandf = df[[
-        "ZONE ONE SUPPLY INLET:System Node Mass Flow Rate [kg/s](TimeStep)",
+        "WEST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_our",
+        "WEST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_easy",
+        "EAST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_our",
+        "EAST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_easy",
         "Date/Time"
     ]]
     fandf.rename(columns={
-        "ZONE ONE SUPPLY INLET:System Node Mass Flow Rate [kg/s](TimeStep)":
-        "System Node Mass Flow Rate"
+        "WEST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_our":
+        "TRPO MPI算法下西部区域送风速率",
+        "WEST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_easy":
+        "Baseline算法下西部区域送风速率",
+        "EAST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_our":
+        "TRPO MPI算法下东部区域送风速率",
+        "EAST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_easy":
+        "Baseline算法下东部区域送风速率",
     }, inplace=True)
 
     zonedf = zonedf[int(start*length/T):int(end*length/T)]
-    hmddf = hmddf[int(start*length/T):int(end*length/T)]
+    outdf = outdf[int(start*length/T):int(end*length/T)]
     fandf = fandf[int(start*length/T):int(end*length/T)]
     # print(plotdf.columns[3:5])
-    #if check1 and check2:
-    #    y = carbondf.columns[0:2]
-    #elif not check1 and not check2:
-    #    y = None
-    #elif not check1:
-    #    y = carbondf.columns[0:1]
-    #elif not check2:
-    #    y = carbondf.columns[1:2]
-    #placeholder = st.empty()
-    """
-    if not check1:
-        y = None 
-    elif check1:
+    if check1 and check2:
+        y = carbondf.columns[0:2]
+    elif not check1 and not check2:
+        y = None
+    elif not check1:
+        y = carbondf.columns[0:1]
+    elif not check2:
         y = carbondf.columns[1:2]
-    """
-    placeholder = st.empty()      
-
+    placeholder = st.empty()
+    
     with placeholder.container():
-        """
         if y is not None:
             fig = px.line(carbondf, x='Date/Time', y=y)
             # labels = ['Outer Temprature', ]
             fig.update_xaxes(
                 tickangle=45,
                 tickformat=format,
-                title = "Carbon Emisson with Time Monitor"
+                title = "气体排放监测"  #Carbon Emisson with Time Monitor
                 )
 
             st.plotly_chart(fig, use_container_width=True)
-        """
-        y2 = gety2index(check1, zonedf)
+
+        y2 = gety2index(check1, check2, selectzone, zonedf)
         if y2 is not None:
             fig2 = px.line(zonedf, x='Date/Time', y=y2)
             fig2.update_xaxes(
                 tickangle=45,
                 tickformat=format,
-                title = "热域(zone)温度"
+                title = "西部/东部区域(HVAC行为)温度监测"  #West/East Zone Temperature (Action of HVAC) Monitor
                 )
             st.plotly_chart(fig2, use_container_width=True)
-        y4 = gety4index(check1, fandf)
+        y4 = gety4index(check1, check2,fanmass , fandf)
         if y4 is not None:
             fig4 = px.line(fandf, x='Date/Time', y=y4)
             fig4.update_xaxes(
                 tickangle=45,
                 tickformat=format,
-                title = "质量流量"
+                title = "实时西部/东部每小时送风速率"  #Real-time West/East Supply Fan Air Mass Flow Rate[kg/s] Hourly
                 )
 
             fig4.update_yaxes(
-                range=[0,0.006]
+                range=[0,8]
             )
             st.plotly_chart(fig4, use_container_width=True)
 
-        y3 = gety3index(check1, hmddf)
+        y3 = gety3index(check1, check2, outtemperatre, outdf)
         if y3 is not None:
-            fig3 = px.line(hmddf, x='Date/Time', y=y3)
+            fig3 = px.line(outdf, x='Date/Time', y=y3)
             fig3.update_xaxes(
                 tickangle=45,
                 tickformat=format,
-                title = "热域(zone)空气相对湿度"
+                title = "实时西部/东部室温监测" #Real-time West/East Zone Real Temperature Monitor
                 )
             st.plotly_chart(fig3, use_container_width=True)       
         
@@ -237,7 +254,7 @@ def staticPlot(weeks):
     # # st.caption("Date/Time vs Evaluation Data")
     # fig3 = px.line(plotdf, x='Date/Time', y=plotdf.columns[7:10])
     # st.plotly_chart(fig3, use_container_width=True)
-"""
+
 Medudict = {'West': ['WEST ZONE DEC OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_easy.',
                     'WEST ZONE DEC OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_our'
                     ],
@@ -246,59 +263,142 @@ Medudict = {'West': ['WEST ZONE DEC OUTLET NODE:System Node Setpoint Temperature
                     'EAST ZONE:Zone Air Temperature [C](TimeStep)_our'
                     ]
             }
-"""
-def gety2index(check1, zonedf):
-    
-    if not check1:
+
+def gety2index(check1, check2, selectzone, zonedf):
+    west = False
+    east = False
+    if "西部区域HVAC温度" in selectzone:    #HVAC West Temperature
+        west = True
+    if "东部区域HVAC温度" in selectzone:    #HVAC East Temperature
+        east = True
+    if not check1 and not check2:
         return None
-    elif check1:
-        return zonedf.columns[0:2]
-    
+    if check1 and check2:
+        if west and east:
+            return zonedf.columns[0:4]
+        elif west and not east:
+            return zonedf.columns[0:2]
+        elif east and not west:
+            return zonedf.columns[2:4]
+        else:
+            return None
+
+    if not check2:
+        if west and east:
+            newdf = zonedf[["East Out Temperature (C) of Baseline","West Out Temperature (C) of Baseline"]] #  West Out Temperature (C) of Baseline
+            return newdf.columns[0:2]
+        elif west:
+            return zonedf.columns[1:2]
+        elif east:
+            return zonedf.columns[3:4]
+    if not check1:
+        if west and east:
+            newdf = zonedf[["East Out Temperature (C) of TRPO MPI","West Out Temperature (C) of TRPO MPI"]] #East Out Temperature (C) of TRPO MPI  West Out Temperature (C) of TRPO MPI
+            return newdf.columns[0:2]
+        elif west:
+            return zonedf.columns[0:1]
+        elif east:
+            return zonedf.columns[2:3]
 
 
-def gety3index(check1, zonedf):
-    
-    if not check1:
+def gety3index(check1, check2, selectzone, zonedf):
+    west = False
+    east = False
+    if "西部区域室温" in selectzone:    #East Zone Supply Fan Rate
+        west = True
+    if "东部区域室温" in selectzone:    #East Temperature
+        east = True
+    if not check1 and not check2:
         return None
-    
-    if check1:
-        return zonedf.columns[0:2]
-    
+    if check1 and check2:
+        if west and east:
+            return zonedf.columns[0:4]
+        elif west and not east:
+            return zonedf.columns[0:2]
+        elif east and not west:
+            return zonedf.columns[2:4]
+        else:
+            return None
+    if not check2:
+        if west and east:
+            newdf = zonedf[["East Zone Real Temperature(C) of Baseline","West Zone Real Temperature(C) of Baseline"]]
+            return newdf.columns[0:2]
+        elif west:
+            return zonedf.columns[1:2]
+        elif east:
+            return zonedf.columns[3:4]
+    if not check1:
+        if west and east:
+            newdf = zonedf[["East Zone Real Temperature(C) of TRPO MPI","West Zone Real Temperature(C) of TRPO MPI"]]
+            return newdf.columns[0:2]
+        elif west:
+            return zonedf.columns[0:1]
+        elif east:
+            return zonedf.columns[2:3]
 
-def gety4index(check1, zonedf):
-    
-    if not check1:
+def gety4index(check1, check2, selectzone, zonedf):
+    west = False
+    east = False
+    if "西部区域送风速率" in selectzone:   #West Zone Supply Fan Rate
+        west = True
+    if "东部区域送风速率" in selectzone:    #East Zone Supply Fan Rate
+        east = True
+    if not check1 and not check2:
         return None
-    if check1:
-        return zonedf.columns[0:2]
+    if check1 and check2:
+        if west and east:
+            return zonedf.columns[0:4]
+        elif west and not east:
+            return zonedf.columns[0:2]
+        elif east and not west:
+            return zonedf.columns[2:4]
+        else:
+            return None
+    if not check2:
+        if west and east:
+            newdf = zonedf[["East Zone Supply Fan Rate of Baseline","West Zone Supply Fan Rate of Baseline"]]
+            return newdf.columns[0:2]
+        elif west:
+            return zonedf.columns[1:2]
+        elif east:
+            return zonedf.columns[3:4]
+    if not check1:
+        if west and east:
+            newdf = zonedf[["East Zone Supply Fan Rate of TRPO MPI","West Zone Supply Fan Rate of TRPO MPI"]]
+            return newdf.columns[0:2]
+        elif west:
+            return zonedf.columns[0:1]
+        elif east:
+            return zonedf.columns[2:3]
 
 
 
 def dynamicPlot(weeks):
-    st.title("实时数据")
-    #st.markdown("""
-    #    在下列选项中选择显示的数据。
-    #""")
+    st.title("实时数据")    #Real-Time HVAC Dashboard
+    st.markdown("""
+        使用以下算法与选项选择您想演示的数据。
+    """)
     move_length = 160
     st.experimental_memo.clear()
-    #Parameters = ['HVAC West Temperature', 'HVAC East Temperature']
-    #Fanmeters = ['West Zone Supply Fan Rate', 'East Zone Supply Fan Rate']
+    Parameters = ['西部区域HVAC温度', '东部区域HVAC温度']
+    Fanmeters = ['西部区域送风速率', '东部区域送风速率']
 
-    #Outmeters = ['West Temperature', 'East Temperature']
+    Outmeters = ['西部区域室温', '东部区域室温']
     check1 = st.checkbox("Baseline")
-    #check2 = st.checkbox("TRPO MPI")
+    check2 = st.checkbox("TRPO MPI")
     st.markdown("""
-        - Baseline是优于虚拟代理性能的线性非平凡控制算法。
+        - Baseline是优于虚拟代理性能的线性非平凡控制算法。        
+        - TRPO MPI是基于强化学习的控制算法。
     """)
 
-    #gas = st.selectbox('气体', ('CO2', 'CO', 'CH4', 'PM2.5', 'SO2', 'NOx'))   
-    #selectzone = st.multiselect('Select HVAC Temperature Parameters ', Parameters, default=['HVAC West Temperature'])
+    gas = st.selectbox('评估气体对象', ('CO2', 'CO', 'CH4', 'PM2.5', 'SO2', 'NOx'))   
+    selectzone = st.multiselect('选择HVAC温度参数 ', Parameters, default=['西部区域HVAC温度'])
     # selectzone = st.multiselect('Select HVAC Temperature Parameters ', Parameters)
 
-    #fanmass = st.multiselect('Select Zone Fan Parameters',Fanmeters, default=['West Zone Supply Fan Rate'])
+    fanmass = st.multiselect('选择区域送风速率参数',Fanmeters, default=['西部区域送风速率'])
     # fanmass = st.multiselect('Select Zone Fan Parameters',Fanmeters)
 
-    #outtemperatre = st.multiselect('Select Output Temperatures ', Outmeters, default=['West Temperature'])
+    outtemperatre = st.multiselect('选择输出温度类型 ', Outmeters, default=['西部区域室温'])
     # outtemperatre = st.multiselect('Select Output Temperatures ', Outmeters)
 
     placeholder = st.empty()
@@ -306,7 +406,7 @@ def dynamicPlot(weeks):
     # start = cur_var
     start = st.session_state['cur']
 
-    if not check1:
+    if not check1 and not check2:
         return 
     
 
@@ -314,53 +414,80 @@ def dynamicPlot(weeks):
         with placeholder.container():
 
             length = len(df)
-            #kpi1, kpi2 = st.columns(2)
+            kpi1, kpi2 = st.columns(2)
 
             if i < move_length:
                 plotdf = df[0:int(i*length/Timestep)]
                 # basedf = easydf[0:int(i*length/Timestep)]
             else:
                 plotdf = df[int((i-move_length)*length/Timestep):int(i*length/Timestep)]
-            """
+
             kpi1.metric(
-                label = "Our " + str(gas) + " Emission Rate Running Average (kg/h)",
+                label = "我们的" + str(gas) + "平均排放量 (kg/h)",
                 value = round(np.average(getGas(gas, plotdf).iloc[:,0]),3)
             )
             kpi2.metric(
-                label = "Baseline" + str(gas) + " Emisson Data Running Average (kg/h)",
+                label = "Baseline模式下" + str(gas) + "平均排放量 (kg/h)",
                 value = round(np.average(getGas(gas, plotdf).iloc[:,0]),3)
             )
-            """
-            # basedf = easydf[int((i-5)*length/Timestep):int(i*length/Timestep)]
+
+                # basedf = easydf[int((i-5)*length/Timestep):int(i*length/Timestep)]
             zonedf = plotdf[[
-                'ZONE ONE RETURN OUTLET:System Node Temperature [C](TimeStep)',
+                'WEST ZONE DEC OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_our',
+                'WEST ZONE DEC OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_easy',
+                'EAST AIR LOOP OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_our',
+                'EAST AIR LOOP OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_easy',
                 'Date/Time'
             ]]
 
             zonedf.rename(columns={
-                "ZONE ONE RETURN OUTLET:System Node Temperature [C](TimeStep)":
-                "Out Temperature (C) of Baseline"
+                "WEST ZONE DEC OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_our":
+                "TRPO MPI算法下西部区域HVAC排放温度(C)",
+                "WEST ZONE DEC OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_easy":
+                "Baseline算法下西部区域HVAC排放温度(C)",
+                "EAST AIR LOOP OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_our":
+                "TRPO MPI算法下东部区域HVAC排放温度(C)",
+                "EAST AIR LOOP OUTLET NODE:System Node Setpoint Temperature [C](TimeStep)_easy":
+                "Baseline算法下东部区域HVAC排放温度(C)"
             }, inplace=True)
 
-            hmddf = plotdf[[
-                "ZONE ONE SPACE:Zone Air Relative Humidity [%](TimeStep)",
-                "Date/Time"
+            outdf = plotdf[[
+                "WEST ZONE:Zone Air Temperature [C](TimeStep)_our",
+                "WEST ZONE:Zone Air Temperature [C](TimeStep)_easy",
+                "EAST ZONE:Zone Air Temperature [C](TimeStep)_our",
+                "EAST ZONE:Zone Air Temperature [C](TimeStep)_easy",
+                'Date/Time'
             ]]
-            hmddf.rename(columns={
-                "ZONE ONE SPACE:Zone Air Relative Humidity [%](TimeStep)":
-                "Air Humidity [%] of Baseline"
+            outdf.rename(columns={
+                "WEST ZONE:Zone Air Temperature [C](TimeStep)_our":
+                "TRPO MPI算法下西部区域实时温度(C)",
+                "WEST ZONE:Zone Air Temperature [C](TimeStep)_easy":
+                "Baseline算法下西部区域实时温度(C)",
+                "EAST ZONE:Zone Air Temperature [C](TimeStep)_our":
+                "TRPO MPI算法下东部区域实时温度(C)",
+                "EAST ZONE:Zone Air Temperature [C](TimeStep)_easy":
+                "Baseline算法下东部区域实时温度(C)"
             }, inplace=True)
 
 
             fandf = plotdf[[
-                "ZONE ONE SUPPLY INLET:System Node Mass Flow Rate [kg/s](TimeStep)",
+                "WEST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_our",
+                "WEST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_easy",
+                "EAST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_our",
+                "EAST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_easy",
                 "Date/Time"
             ]]
             fandf.rename(columns={
-                "ZONE ONE SUPPLY INLET:System Node Mass Flow Rate [kg/s](TimeStep)":
-                "System Node Mass Flow Rate"
+                "WEST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_our":
+                "TRPO MPI算法下西部区域送风速率",
+                "WEST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_easy":
+                "Baseline算法下西部区域送风速率",
+                "EAST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_our":
+                "TRPO MPI算法下西部区域送风速率",
+                "EAST ZONE SUPPLY FAN:Fan Air Mass Flow Rate [kg/s](Hourly)_easy":
+                "Baseline算法下西部区域送风速率",
             }, inplace=True)
-            """
+
             subdf = getGas(gas, plotdf)
 
             y_ = subdf.columns[0:2]
@@ -375,48 +502,48 @@ def dynamicPlot(weeks):
                             dtick=12,
                             tickformat=format,
                             range=[0,move_length],
-                            title = "Real-time CO2 Emission Equivalent Mass Monitor"
+                            title = "实时CO2排放量监测"  #Real-time CO2 Emission Equivalent Mass Monitor
                             )
             # fig.update_yaxes(range=[0,32])
             # fig.addtrace(bbasedf, x = 'Date/Time', y=basedf.columms[5:6])
             st.plotly_chart(fig, use_container_width=True)
-            """
+
         
-            y2 = gety2index(check1,  zonedf)
+            y2 = gety2index(check1, check2, selectzone, zonedf)
             fig2 = px.line(zonedf, x='Date/Time', y=y2)
             fig2.update_xaxes(
                 tickangle=45,
                 dtick=12,
                 tickformat=format,
                 range=[0,move_length],
-                title = "Real-time West/East Zone Temperature (Action of HVAC) Monitor"
+                title = "实时西部/东部区域(HVAC行为)温度监测"  #Real-time West/East Zone Temperature (Action of HVAC) Monitor
                 )
 
 
             st.plotly_chart(fig2, use_container_width=True)
 
-            y4 = gety4index(check1, fandf)
+            y4 = gety4index(check1, check2,fanmass , fandf)
             fig4 = px.line(fandf, x='Date/Time', y=y4)
             fig4.update_xaxes(
                 tickangle=45,
                 dtick=12,
                 tickformat=format,
                 range=[0,move_length],
-                title = "Real-time West/East Zone Real Temperature Monitor"
+                title = "实时西部/东部区域室温监测"  #Real-time West/East Zone Real Temperature Monitor
                 )
             fig4.update_yaxes(
-                range=[0,0.06]
+                range=[0,8]
             )
             st.plotly_chart(fig4, use_container_width=True)
             
-            y3 = gety3index(check1, hmddf)
-            fig3 = px.line(hmddf, x='Date/Time', y=y3)
+            y3 = gety3index(check1, check2,outtemperatre, outdf)
+            fig3 = px.line(outdf, x='Date/Time', y=y3)
             fig3.update_xaxes(
                 tickangle=45,
                 dtick=12,
                 tickformat=format,
                 range=[0,move_length],
-                title = "Real-time West/East Zone Real Temperature Monitor"
+                title = "实时西部/东部区域室温监测"  #Real-time West/East Zone Real Temperature Monitor
                 )
             st.plotly_chart(fig3, use_container_width=True)
             
@@ -464,8 +591,8 @@ def data_page():
         return strain
 
         
-    st.sidebar.markdown("## 显示模式")
-    mode = st.sidebar.selectbox(' ', [ '静态', '动态' ])   
+    st.sidebar.markdown("## 演示类型")
+    mode = st.sidebar.selectbox('您想如何演示类型？', [ '静态', '动态' ])   
 
     st.sidebar.markdown('## 时间（周）')
     weeks = st.sidebar.slider('周数', min_value=1,
@@ -479,13 +606,12 @@ def data_page():
         with _lock:
             staticPlot(weeks)
             write_st_end()
-            
+
     elif mode == '动态':
         dynamicPlot(weeks)
         write_st_end()
 
         pass
-    
 
 
  
